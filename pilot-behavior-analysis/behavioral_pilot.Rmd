@@ -90,13 +90,26 @@ learn_figure %>%
 # Exposure
 
 ```{r}
-exposure_figure = exposure_batch %>% 
+exposure_batch = exposure_batch %>% 
   mutate(highlow = gsub('exposure', '', round),
-         highlow = tolower(highlow)) %>% 
-  group_by(highlow, sub) %>% 
-  summarise(mean = mean(correct)) 
+         highlow = tolower(highlow))
 
-exposure_figure %>% gt()
+exposure_batch %>% 
+  group_by(highlow, sub) %>% 
+  summarise(mean = mean(correct)) %>% 
+  gt() %>%
+  tab_header(
+    title = md("Accuracy")
+  )
+
+exposure_batch %>% 
+  filter(resp == 'na') %>% 
+  group_by(highlow, sub) %>% 
+  summarise(n = n()) %>% 
+  gt() %>%
+  tab_header(
+    title = md("Num no response")
+  )
 ```
 
 # Post
