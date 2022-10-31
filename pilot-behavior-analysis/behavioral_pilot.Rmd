@@ -92,23 +92,31 @@ learn_figure %>%
 ```{r}
 exposure_batch = exposure_batch %>% 
   mutate(highlow = gsub('exposure', '', round),
-         highlow = tolower(highlow))
+         highlow = tolower(highlow),
+         type_resp = ifelse(resp == 'na', 'na',
+                             ifelse(correct == 0, 
+                                    'incorrect', 'correct')))
 
 exposure_batch %>% 
   group_by(highlow, sub) %>% 
   summarise(mean = mean(correct)) %>% 
+  pivot_wider(names_from = highlow, values_from = mean, values_fill = 0) %>%
   gt() %>%
   tab_header(
     title = md("Accuracy")
   )
+```
 
+
+```{r}
 exposure_batch %>% 
-  filter(resp == 'na') %>% 
-  group_by(highlow, sub) %>% 
-  summarise(n = n()) %>% 
+  group_by(highlow, sub, type_resp) %>% 
+  summarise(n = n())  %>% 
+  pivot_wider(names_from = type_resp, values_from = n, values_fill = 0)%>%
+  ungroup() %>% 
   gt() %>%
   tab_header(
-    title = md("Num no response")
+    title = md("Num each response")
   )
 ```
 
