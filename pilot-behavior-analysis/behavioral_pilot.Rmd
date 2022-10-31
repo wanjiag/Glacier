@@ -1,0 +1,157 @@
+---
+title: "behavioral_pilot"
+author: "Wanjia Guo"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: journal
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message = FALSE)
+knitr::opts_chunk$set(fig.width=12, fig.height=8) 
+library(gt)
+library(fs)
+library(purrr)
+library(tidyverse)
+theme_set(theme_minimal(20))
+```
+
+
+
+```{r warning=FALSE}
+converting_read <- function(curr_path){
+  read_csv(curr_path) %>% mutate(sub = as.character(sub),
+                                 rt = as.double(rt)) 
+}
+
+converting_read2 <- function(curr_path){
+  read_csv(curr_path) %>% mutate(sub = as.character(sub)) 
+}
+
+# Loading behavioral data
+sub_dir = dir_ls(here::here("../../../behavior-code-v0/data/"))
+learn_behav <- map(sub_dir, dir_ls, glob = '*test*_behav*.csv') %>% unlist()
+exposure_behav <- map(sub_dir, dir_ls, glob = '*exposure*_behav*.csv') %>% unlist()
+post_behav <- map(sub_dir, dir_ls, glob = '*post_behav*.csv') %>% unlist()
+
+learn_batch <- map_dfr(learn_behav, converting_read)
+exposure_batch <- map_dfr(exposure_behav, converting_read2)
+post_batch <- map_dfr(post_behav, converting_read)
+
+```
+
+
+# Learning
+
+```{r}
+
+learn_batch = learn_batch %>% 
+  mutate(category = gsub('[[:digit:]]+', '', scene),
+         subnum = as.numeric(sub),
+         highlow = if_else(subnum %% 2 == 0,
+                           ifelse(category == 'beach', 'high', 'low'),
+                           ifelse(category == 'beach', 'low', 'high')),
+         resp_type = factor(resp_type, levels = c('correct', 'within', 'across', 'na')))
+
+learn_figure = learn_batch %>% group_by(highlow, sub, round, resp_type) %>% 
+  summarise(n = n()/24) %>% 
+  pivot_wider(names_from = resp_type, values_from = n, values_fill = 0) %>% 
+  pivot_longer(cols = correct:across, names_to = 'resp_type', values_to = 'n') %>% 
+  mutate(resp_type = factor(resp_type, levels = c('correct', 'within', 'across', 'na')))
+         
+
+learn_figure %>%   
+  group_by(highlow, round, resp_type) %>% 
+  summarise(m = mean(n),
+            se = sd(n)/sqrt(n()),
+            n = n()) %>% 
+  ggplot(aes(x = round, y = m, fill = resp_type)) + 
+  geom_bar(stat = 'identity', position = position_dodge(0.9)) + 
+  geom_errorbar(aes(ymin=m-se, ymax=m+se), color="black", width=0.1, size=0.5, 
+                position = position_dodge(0.9))+
+    geom_point(data = learn_figure,
+             aes(x = round, y = n, color = resp_type, group = resp_type),
+             position=position_jitterdodge(
+                    jitter.width = 0.2,
+                    dodge.width = 0.9))+
+  facet_wrap(~highlow)+
+  colorblindr::scale_fill_OkabeIto()+
+  colorblindr::scale_color_OkabeIto(darken = 0.3)+
+  theme(legend.position = 'bottom')+
+  labs(y = 'Percentage',
+       x = 'Response Type')
+```
+
+# Exposure
+
+```{r}
+exposure_figure = exposure_batch %>% 
+  mutate(highlow = gsub('exposure', '', round),
+         highlow = tolower(highlow)) %>% 
+  group_by(highlow, sub) %>% 
+  summarise(mean = mean(correct)) 
+
+exposure_figure %>% gt()
+```
+
+# Post
+
+```{r}
+post_batch = post_batch %>% 
+  mutate(category = gsub('[[:digit:]]+', '', scene),
+         subnum = as.numeric(sub),
+         highlow = if_else(subnum %% 2 == 0,
+                           ifelse(category == 'beach', 'high', 'low'),
+                           ifelse(category == 'beach', 'low', 'high')),
+         resp_type = factor(resp_type, levels = c('correct', 'within', 'across', 'na')),
+         correct_and_conf = if_else(conf_correct == 1 & resp_type == 'correct', 1, 0)
+                       )
+
+post_figure1 = post_batch %>% group_by(highlow, sub, resp_type) %>% 
+  summarise(n = n()/24) %>% 
+  pivot_wider(names_from = resp_type, values_from = n, values_fill = 0) %>% 
+  pivot_longer(cols = correct:across, names_to = 'resp_type', values_to = 'n') %>% 
+  mutate(resp_type = factor(resp_type, levels = c('correct', 'within', 'across', 'na')))
+
+post_figure1 %>%   
+  group_by(highlow, resp_type) %>% 
+  summarise(m = mean(n),
+            se = sd(n)/sqrt(n()),
+            n = n()) %>% 
+  ggplot(aes(x = resp_type, y = m, fill = highlow)) + 
+  geom_bar(stat = 'identity', position = position_dodge(0.9)) + 
+  geom_errorbar(aes(ymin=m-se, ymax=m+se), color="black", width=0.1, size=0.5, 
+                position = position_dodge(0.9))+
+  geom_point(data = post_figure1,
+             aes(x = resp_type, y = n, color = highlow, group = highlow),
+             position=position_jitterdodge(
+                    jitter.width = 0.2,
+                    dodge.width = 0.9))+
+  colorblindr::scale_fill_OkabeIto()+
+  colorblindr::scale_color_OkabeIto(darken = 0.3)+
+  theme(legend.position = 'bottom')+
+  labs(y = 'Percentage',
+       x = 'Response Type')
+
+post_figure2 = post_batch %>% group_by(highlow, sub) %>% 
+  summarise(m = mean(correct_and_conf)) 
+
+post_figure2 %>% group_by(highlow) %>% 
+  summarise(mean = mean(m),
+            se = sd(m)/sqrt(n()),
+            n = n()) %>% 
+  ggplot(aes(x = highlow, y = mean))+
+  geom_bar(stat = 'identity') +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), color="red", width=0.1, size=0.5)+
+  geom_point(data = post_figure2,
+             aes(x = highlow, y = m),
+             position=position_jitter(height = 0, width = 0.2))+
+  labs(y = 'confidence correct')
+  
+```
+
