@@ -84,7 +84,7 @@ learn_figure %>%
   colorblindr::scale_color_OkabeIto(darken = 0.3)+
   theme(legend.position = 'bottom')+
   labs(y = 'Percentage',
-       x = 'Response Type')
+       x = 'Rounds')
 ```
 
 # Exposure
