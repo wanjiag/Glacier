@@ -1,0 +1,10 @@
+# log files
+logs/*
+fmriprep/log/*
+
+# auto-generated files
+fmriprep/sbatch/*
+glm_sbatch/*
+
+# environmental files
+.ipynb_checkpoints
