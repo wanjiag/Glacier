@@ -8,3 +8,4 @@ glm_sbatch/*
 
 # environmental files
 .ipynb_checkpoints
+jupyter_test/__pycache__/*
