@@ -1,0 +1,26 @@
+#!/bin/bash
+#SBATCH --partition=short        ### Partition (like a queue in PBS)
+#SBATCH --job-name=ashs      ### Job Name
+#SBATCH --output=./logs/03_ashs_%j.out         ### File in which to store job output
+#SBATCH --error=./logs/03_ashs_%j.err          ### File in which to store job error messages
+#SBATCH --time=0-23:00:00       ### Wall clock time limit in Days-HH:MM:SS
+#SBATCH --nodes=1               ### Number of nodes needed for the job
+#SBATCH --ntasks-per-node=1     ### Number of tasks to be launched per Node
+#SBATCH --account=kuhl_lab      ### Account used for job submission
+#SBATCH --partition=kuhl
+#SBATCH --mail-user=wanjiag@uoregon.edu
+#SBATCH --mail-type=END 
+
+for i in 18
+do
+
+	if [ ! -d "/home/wanjiag/projects/GLACIER/derivatives/roi/ASHS/sub-GLACIER"$i"" ] ; then
+		mkdir -p "/home/wanjiag/projects/GLACIER/derivatives/roi/ASHS/sub-GLACIER"$i""
+	fi
+
+	echo "/gpfs/projects/kuhl_lab/shared/ashs/ashs-fastashs_beta/bin/ashs_main.sh -I sub-GLACIER"$i" -a /projects/kuhl_lab/shared/ashs/atlases/ashs_atlas_abc_prisma_20200406 -g /projects/kuhl_lab/wanjiag/GLACIER/derivatives/fmriprep/sub-GLACIER"$i"/anat/sub-GLACIER"$i"_desc-preproc_T1w.nii.gz -f /projects/kuhl_lab/wanjiag/GLACIER/sub-GLACIER"$i"/anat/sub-GLACIER"$i"_T2w.nii.gz -w /projects/kuhl_lab/wanjiag/GLACIER/derivatives/roi/ASHS/sub-GLACIER"$i"/ > /projects/kuhl_lab/wanjiag/GLACIER/derivatives/roi/ASHS/sub-GLACIER"$i"/ashs.out"
+
+
+	/gpfs/projects/kuhl_lab/shared/ashs/ashs-fastashs_beta/bin/ashs_main.sh -I sub-GLACIER"$i" -a /projects/kuhl_lab/shared/ashs/atlases/ashs_atlas_abc_prisma_20200406 -g /projects/kuhl_lab/wanjiag/GLACIER/derivatives/fmriprep/sub-GLACIER"$i"/anat/sub-GLACIER"$i"_desc-preproc_T1w.nii.gz -f /projects/kuhl_lab/wanjiag/GLACIER/sub-GLACIER"$i"/anat/sub-GLACIER"$i"_T2w.nii.gz -w /projects/kuhl_lab/wanjiag/GLACIER/derivatives/roi/ASHS/sub-GLACIER"$i"/ > /projects/kuhl_lab/wanjiag/GLACIER/derivatives/roi/ASHS/sub-GLACIER"$i"/ashs.out
+
+done

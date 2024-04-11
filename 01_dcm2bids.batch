@@ -11,7 +11,7 @@
 #SBATCH --mail-user=wanjiag@uoregon.edu
 #SBATCH --mail-type=END 
                  
-module load anaconda3
+module load miniconda
 module load dcm2niix/1.0.20230411
 
 conda activate /home/wanjiag/projects/environments/glacier_env

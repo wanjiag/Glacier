@@ -82,8 +82,8 @@ for sub_id in sub_list:
         f'--mail-type={args.mail_type} '      
         
         '--wrap='
-        '\"module load anaconda3 && '
+        '\"module load miniconda && '
         'conda activate /home/wanjiag/projects/environments/glacier_env && '
-        f'python /gpfs/projects/kuhl_lab/wanjiag/GLACIER/derivatives/scripts/python_code/glm.py --subs {sub_id}\"\n'
+        f'python3.10 /gpfs/projects/kuhl_lab/wanjiag/GLACIER/derivatives/scripts/python_code/glm.py --subs {sub_id}\"\n'
     )
 cmd_file.write_text(cmd_str)

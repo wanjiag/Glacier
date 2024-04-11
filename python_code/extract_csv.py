@@ -10,7 +10,9 @@ roi_base_dir = opj(derivative_dir, 'roi')
 csv_base_dir = opj(derivative_dir, 'csv')
 glm_base_dir = opj(derivative_dir, 'glm')
 
-rois = ['evc-2-epi_thr-50_masked_bin', 'ppa_mni-2-epi_thr-0.5_masked_bin']
+rois = ['evc-2-epi_thr-50_masked_bin', 'ppa_mni-2-epi_thr-0.5_masked_bin',
+        'ca1_t1-2-epi_masked_thr-0.5', 'ca1-body_t1-2-epi_masked_thr-0.5',
+        'ca23dg_t1-2-epi_masked_thr-0.5', 'ca23dg-body_t1-2-epi_masked_thr-0.5']
 #hippo_subfields = ['ashs/body/ca1-body_thre_0.5_masked', 'ashs/body/ca23dg-body_thre_0.5_masked',
 #                   'ashs/whole/ca1_thre_0.5_masked', 'ashs/whole/ca23dg_thre_0.5_masked']
 
