@@ -5,11 +5,11 @@ Change subject number in fmriprep/participants.tsv
 Load python3, run fmriprep_create_python.py -> generate new bash file in fmriprep/sbatch/
 Run the newly generated file in fmriprep/sbatch/
 
-02.1 and 02.2 are basically the same code. 02.1 is better if there is only one subject to be processed; 02.2 can parallel multiple subjects. 
+02.1 and 02.2 are basically the same code. It takes ~10hours for each subject. Therefore, 02.1 is designed to be used with a single subject; 02.2 can submit parallel jobs for multiple subjects. 
 02.1: change --subs into current subject before running.
 02.2: change glm_participants.tsv before running. The bash code will be generated in glm_sbatch/. It is a similar procedure as running fmriprep in the previous step.
 
-03_ashs.batch and 02.x can be run at the same time. Change subject id in 03 before running the code.
+03_ashs.batch and 02.x can be run at the same time. Change subject id in 03 before running the code. Also takes hours to run.
 
 04_roi.batch can be run with specified subject using --sub, or the subjects will be detected automatically: subject who has a glm output folder, but not roi output folder. Visual cortex can be run alone using -v; hippocampus subfields from ASHS can be run alone using -a.
 
