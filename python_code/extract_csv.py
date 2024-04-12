@@ -29,12 +29,12 @@ if automatic_detecting_subjects:
         processed_subs = [x.split('/')[-2] for x in processed_list]
         todo_subs = [x for x in subs if x not in processed_subs]
     
-    print(todo_subs)
+    print(todo_subs, flush=True)
     
 for sub in todo_subs:
     
     output_dir = opj(csv_base_dir, sub)
-    print(f'---------------------------{sub}---------------------------')
+    print(f'---------------------------{sub}---------------------------', flush=True)
     
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
@@ -43,16 +43,16 @@ for sub in todo_subs:
         func_files = glob(f'{glm_folder}/*tstat*')
         
     for roi in rois:
-        print(f'---------------------------{roi}---------------------------')
+        print(f'---------------------------{roi}---------------------------', flush=True)
         
         region_mask = opj(roi_base_dir, f'{sub}/{roi}.nii.gz')
-        print(roi, region_mask)
+        print(roi, region_mask, flush=True)
         masker = NiftiMasker(region_mask)
         
         output_csv = pd.DataFrame()
         
         for file_name in func_files:
-            print(f'---------------------------{file_name}---------------------------')
+            print(f'---------------------------{file_name}---------------------------', flush=True)
             
             if 'lure' in file_name:
                 continue
