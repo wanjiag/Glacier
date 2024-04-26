@@ -15,4 +15,4 @@ module load miniconda
 
 conda activate /home/wanjiag/projects/environments/glacier_env
 
-python3.10 /gpfs/projects/kuhl_lab/wanjiag/GLACIER/derivatives/scripts/python_code/extract_csv.py
+python3.10 /gpfs/projects/kuhl_lab/wanjiag/GLACIER/derivatives/scripts/python_code/extract_csv.py -s sub-GLACIER10
